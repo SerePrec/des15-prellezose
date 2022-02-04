@@ -6,8 +6,8 @@ const router = Router();
 
 router.get("/", isAuthWeb, controller.getHome);
 
-router.get("/info", isAuthWeb, controller.showAppInfo);
+router.get("/info", controller.showAppInfo);
 
-router.get("/productos-mock", isAuthWeb, controller.getProductosMock);
+router.get("/productos-mock", controller.getProductosMock);
 
 export default router;

@@ -1,0 +1,158 @@
+**************************************************************************
+*****************************   PARTE 1   ********************************
+**************************************************************************
+
+->> Ejecutar el servidor (modos FORK y CLUSTER) con nodemon verificando el número de procesos tomados por node.
+
+nodemon src/index.js --port 8081 --mode fork
+htop
+# Se ve un proceso padre que tiene como hijo y supervisa al servidor en modo fork
+
+nodemon src/index.js --port 8082 --mode cluster
+htop
+# se ve un proceso padre que tiene como hijo y supervisa al servidor en modo cluster. Es decir, un proceso maestro y tantos workers como CPUs disponga la computadora.
+
+
+->> Ejecutar el servidor (con los parámetros adecuados) utilizando Forever, verificando su correcta operación. Listar los procesos por Forever y por sistema operativo.
+
+forever start --watch src/index.js --port 8081 --mode fork
+forever list
+htop
+# Se ve un proceso padre (monitor) que tiene como hijo y supervisa al servidor en modo fork
+
+forever start --watch src/index.js --port 8082 --mode cluster
+forever list
+htop
+# se ve un proceso padre que tiene como hijo y supervisa al servidor en modo cluster. Es decir, un proceso maestro y tantos workers como CPUs disponga la computadora.
+
+**************************************************************************
+info:    Forever processes running
+data:undefined    uid  command                                             script                                  forever pid   id logfile                          uptime                  
+data:undefined[0] BVX3 /home/sereprec/.nvm/versions/node/v16.13.0/bin/node src/index.js --port 8081 --mode fork    24051   24063    /home/sereprec/.forever/BVX3.log 0:0:3:38.083            
+data:undefined[1] QL_m /home/sereprec/.nvm/versions/node/v16.13.0/bin/node src/index.js --port 8082 --mode cluster 24165   24177    /home/sereprec/.forever/QL_m.log 0:0:2:50.305 
+**************************************************************************
+
+forever stopall
+
+
+->> Ejecutar el servidor (con los parámetros adecuados: modo FORK) utilizando PM2 en sus modos modo fork y cluster. Listar los procesos por PM2 y por sistema operativo.
+
+pm2 start src/index.js  --name server_fork --watch -- -p 8081 -m forkpm
+
+pm2 start src/index.js  --name server_cluster -i max --watch -- -p 8082 -m fork
+
+pm2 list
+┌─────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26347    │ 6m     │ 0    │ online    │ 0%       │ 89.5mb   │ sereprec │ enabled  │
+│ 2   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26354    │ 6m     │ 0    │ online    │ 0%       │ 90.8mb   │ sereprec │ enabled  │
+│ 3   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26361    │ 6m     │ 0    │ online    │ 0%       │ 87.9mb   │ sereprec │ enabled  │
+│ 4   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26374    │ 6m     │ 0    │ online    │ 0%       │ 90.0mb   │ sereprec │ enabled  │
+│ 5   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26387    │ 6m     │ 0    │ online    │ 0%       │ 86.9mb   │ sereprec │ enabled  │
+│ 6   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26402    │ 6m     │ 0    │ online    │ 0%       │ 91.6mb   │ sereprec │ enabled  │
+│ 7   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26415    │ 6m     │ 0    │ online    │ 0%       │ 90.0mb   │ sereprec │ enabled  │
+│ 8   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26428    │ 6m     │ 0    │ online    │ 0%       │ 89.9mb   │ sereprec │ enabled  │
+│ 9   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26441    │ 6m     │ 0    │ online    │ 0%       │ 89.9mb   │ sereprec │ enabled  │
+│ 10  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26456    │ 6m     │ 0    │ online    │ 0%       │ 87.8mb   │ sereprec │ enabled  │
+│ 11  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26471    │ 6m     │ 0    │ online    │ 0%       │ 91.8mb   │ sereprec │ enabled  │
+│ 12  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26484    │ 6m     │ 0    │ online    │ 0%       │ 89.9mb   │ sereprec │ enabled  │
+│ 13  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26497    │ 6m     │ 0    │ online    │ 0%       │ 89.1mb   │ sereprec │ enabled  │
+│ 14  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26518    │ 6m     │ 0    │ online    │ 0%       │ 86.6mb   │ sereprec │ enabled  │
+│ 15  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26525    │ 6m     │ 0    │ online    │ 0%       │ 93.5mb   │ sereprec │ enabled  │
+│ 16  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26553    │ 6m     │ 0    │ online    │ 0%       │ 86.0mb   │ sereprec │ enabled  │
+│ 0   │ server_fork       │ default     │ 1.0.0   │ fork    │ 27003    │ 119s   │ 0    │ online    │ 0%       │ 97.2mb   │ sereprec │ enabled  │
+└─────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+htop
+kill 27003
+
+┌─────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26347    │ 6m     │ 0    │ online    │ 0%       │ 90.7mb   │ sereprec │ enabled  │
+│ 2   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26354    │ 6m     │ 0    │ online    │ 0%       │ 91.3mb   │ sereprec │ enabled  │
+│ 3   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26361    │ 6m     │ 0    │ online    │ 0%       │ 87.6mb   │ sereprec │ enabled  │
+│ 4   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26374    │ 6m     │ 0    │ online    │ 0%       │ 90.3mb   │ sereprec │ enabled  │
+│ 5   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26387    │ 6m     │ 0    │ online    │ 0%       │ 87.2mb   │ sereprec │ enabled  │
+│ 6   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26402    │ 6m     │ 0    │ online    │ 0%       │ 92.0mb   │ sereprec │ enabled  │
+│ 7   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26415    │ 6m     │ 0    │ online    │ 0%       │ 89.7mb   │ sereprec │ enabled  │
+│ 8   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26428    │ 6m     │ 0    │ online    │ 0%       │ 90.2mb   │ sereprec │ enabled  │
+│ 9   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26441    │ 6m     │ 0    │ online    │ 0%       │ 89.6mb   │ sereprec │ enabled  │
+│ 10  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26456    │ 6m     │ 0    │ online    │ 0%       │ 87.6mb   │ sereprec │ enabled  │
+│ 11  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26471    │ 6m     │ 0    │ online    │ 0%       │ 92.4mb   │ sereprec │ enabled  │
+│ 12  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26484    │ 6m     │ 0    │ online    │ 0%       │ 89.4mb   │ sereprec │ enabled  │
+│ 13  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26497    │ 6m     │ 0    │ online    │ 0%       │ 89.4mb   │ sereprec │ enabled  │
+│ 14  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26518    │ 6m     │ 0    │ online    │ 0%       │ 87.2mb   │ sereprec │ enabled  │
+│ 15  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26525    │ 6m     │ 0    │ online    │ 0%       │ 93.8mb   │ sereprec │ enabled  │
+│ 16  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26553    │ 6m     │ 0    │ online    │ 0%       │ 86.5mb   │ sereprec │ enabled  │
+│ 0   │ server_fork       │ default     │ 1.0.0   │ fork    │ 27233    │ 14s    │ 1    │ online    │ 0%       │ 92.9mb   │ sereprec │ enabled  │
+└─────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+kill 26347
+
+┌─────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 27400    │ 10s    │ 1    │ online    │ 0%       │ 85.8mb   │ sereprec │ enabled  │
+│ 2   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26354    │ 7m     │ 0    │ online    │ 0%       │ 90.9mb   │ sereprec │ enabled  │
+│ 3   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26361    │ 7m     │ 0    │ online    │ 0%       │ 88.4mb   │ sereprec │ enabled  │
+│ 4   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26374    │ 7m     │ 0    │ online    │ 0%       │ 90.3mb   │ sereprec │ enabled  │
+│ 5   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26387    │ 7m     │ 0    │ online    │ 0%       │ 86.8mb   │ sereprec │ enabled  │
+│ 6   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26402    │ 7m     │ 0    │ online    │ 0%       │ 93.1mb   │ sereprec │ enabled  │
+│ 7   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26415    │ 7m     │ 0    │ online    │ 0%       │ 91.3mb   │ sereprec │ enabled  │
+│ 8   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26428    │ 7m     │ 0    │ online    │ 0%       │ 90.2mb   │ sereprec │ enabled  │
+│ 9   │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26441    │ 7m     │ 0    │ online    │ 0%       │ 90.1mb   │ sereprec │ enabled  │
+│ 10  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26456    │ 7m     │ 0    │ online    │ 0%       │ 87.5mb   │ sereprec │ enabled  │
+│ 11  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26471    │ 7m     │ 0    │ online    │ 0%       │ 92.5mb   │ sereprec │ enabled  │
+│ 12  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26484    │ 7m     │ 0    │ online    │ 0%       │ 89.3mb   │ sereprec │ enabled  │
+│ 13  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26497    │ 7m     │ 0    │ online    │ 0%       │ 89.4mb   │ sereprec │ enabled  │
+│ 14  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26518    │ 7m     │ 0    │ online    │ 0%       │ 87.5mb   │ sereprec │ enabled  │
+│ 15  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26525    │ 7m     │ 0    │ online    │ 0%       │ 93.9mb   │ sereprec │ enabled  │
+│ 16  │ server_cluster    │ default     │ 1.0.0   │ cluster │ 26553    │ 7m     │ 0    │ online    │ 0%       │ 86.2mb   │ sereprec │ enabled  │
+│ 0   │ server_fork       │ default     │ 1.0.0   │ fork    │ 27233    │ 70s    │ 1    │ online    │ 0%       │ 94.7mb   │ sereprec │ enabled  │
+└─────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+
+
+**************************************************************************
+*****************************   PARTE 2   ********************************
+**************************************************************************
+
+->> Config 1
+
+pm2 start src/index.js  --name server_cluster -- --port 8081 --mode cluster
+
+pm2 start src/index.js  --name server_fork -- --port 8080 --mode fork
+
+┌─────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1   │ server_cluster    │ default     │ 1.0.0   │ fork    │ 42753    │ 6s     │ 0    │ online    │ 0%       │ 55.4mb   │ sereprec │ disabled │
+│ 0   │ server_fork       │ default     │ 1.0.0   │ fork    │ 42725    │ 10s    │ 0    │ online    │ 0%       │ 86.1mb   │ sereprec │ disabled │
+└─────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+# ver archivo de configuración nginx: nginx_1.conf
+
+->> Config 2
+
+pm2 start src/index.js  --name server_1 -- --port 8080 --mode fork
+pm2 start src/index.js  --name server_2 -- --port 8082 --mode fork
+pm2 start src/index.js  --name server_3 -- --port 8083 --mode fork
+pm2 start src/index.js  --name server_4 -- --port 8084 --mode fork
+pm2 start src/index.js  --name server_5 -- --port 8085 --mode fork
+
+┌─────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ server_1    │ default     │ 1.0.0   │ fork    │ 43460    │ 43s    │ 0    │ online    │ 0%       │ 85.3mb   │ sereprec │ disabled │
+│ 1   │ server_2    │ default     │ 1.0.0   │ fork    │ 43518    │ 19s    │ 0    │ online    │ 0%       │ 86.6mb   │ sereprec │ disabled │
+│ 2   │ server_3    │ default     │ 1.0.0   │ fork    │ 43550    │ 13s    │ 0    │ online    │ 0%       │ 86.0mb   │ sereprec │ disabled │
+│ 3   │ server_4    │ default     │ 1.0.0   │ fork    │ 43582    │ 7s     │ 0    │ online    │ 0%       │ 116.9mb  │ sereprec │ disabled │
+│ 4   │ server_5    │ default     │ 1.0.0   │ fork    │ 43619    │ 0s     │ 0    │ online    │ 0%       │ 16.4mb   │ sereprec │ disabled │
+└─────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+
+
+
+
