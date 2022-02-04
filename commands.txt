@@ -132,7 +132,7 @@ pm2 start src/index.js  --name server_fork -- --port 8080 --mode fork
 │ 0   │ server_fork       │ default     │ 1.0.0   │ fork    │ 42725    │ 10s    │ 0    │ online    │ 0%       │ 86.1mb   │ sereprec │ disabled │
 └─────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 
-# ver archivo de configuración nginx: nginx_1.conf
+# ver archivo de configuración nginx config1
 
 ->> Config 2
 
@@ -152,7 +152,14 @@ pm2 start src/index.js  --name server_5 -- --port 8085 --mode fork
 │ 4   │ server_5    │ default     │ 1.0.0   │ fork    │ 43619    │ 0s     │ 0    │ online    │ 0%       │ 16.4mb   │ sereprec │ disabled │
 └─────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 
+# ver archivo de configuración nginx config2
 
+->> Config 3
+
+# Modifiqué la configuración del servidor express para que no sea este el que sirva los recursos estáticos y que sea Nginx quién lo haga
+# Así se mejora el rendimiento global de la app
+
+# ver las modificaciones en el archivo de configuración nginx config3
 
 
 
