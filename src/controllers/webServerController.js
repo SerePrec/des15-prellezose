@@ -1,5 +1,6 @@
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import config from "../config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -33,6 +34,7 @@ export const showAppInfo = (req, res) => {
     args:
       process.argv.length > 2 ? process.argv.slice(2).join(", ") : "ninguno",
     pid: process.pid,
-    rss: `${Math.round(process.memoryUsage().rss / 1024)} KB`
+    rss: Math.round(process.memoryUsage().rss / 1024),
+    CPUs: config.numCPUs
   });
 };

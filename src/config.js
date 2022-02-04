@@ -1,10 +1,11 @@
+import os from "os";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import parseArgs from "minimist";
 
 const argv = parseArgs(process.argv.slice(2), {
-  alias: { p: ["PORT", "port"] },
-  default: { p: 8080 }
+  alias: { p: ["PORT", "port"], m: ["mode", "MODE"] },
+  default: { p: 8080, m: "fork" }
 });
 
 if (process.env.NODE_ENV !== "production") {
@@ -15,7 +16,9 @@ if (process.env.NODE_ENV !== "production") {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const config = {
-  PORT: Number(argv.PORT) || 8080,
+  PORT: process.env.PORT || Number(argv.PORT) || 8080,
+  MODE: process.env.MODE || argv.MODE || "fork",
+  numCPUs: os.cpus().length,
   fileSystemDb: {
     path: path.join(__dirname, "..", "DB"),
     messagesFile: "mensajes.json",
@@ -39,7 +42,7 @@ const config = {
     useNullAsDefault: true
   },
   mongoDb: {
-    connectionString: "mongodb://localhost/des14",
+    connectionString: "mongodb://localhost/des15",
     options: {
       //useNewUrlParser: true, //No necesario desde mongoose 6
       //useUnifiedTopology: true, //No necesario desde mongoose 6

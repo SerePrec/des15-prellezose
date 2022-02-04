@@ -12,6 +12,7 @@
   "author": "SEP",
   "license": "ISC",
   "dependencies": {
+    "@socket.io/cluster-adapter": "^0.1.0",
     "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
     "dotenv": "^10.0.0",

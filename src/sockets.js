@@ -7,7 +7,7 @@ export default io => {
     const socketId = socket.id;
     let now = new Date().toLocaleTimeString();
     console.log(
-      `[${now}] Cliente socket conectado con el id: ${socketId}\n** Conexiones websocket activas: ${io.engine.clientsCount} **`
+      `[${now}] Cliente socket conectado con id: ${socketId}\n** Conexiones websocket activas en servidor PID ${process.pid}: ${io.engine.clientsCount} **`
     );
 
     //Obtiene listado de productos con cada conexión entrante y lo envía al socket
@@ -20,7 +20,7 @@ export default io => {
     }
 
     // Envio a todos los sockets la cantidad de usuarios conectados con cada conexión
-    io.sockets.emit("usersCount", io.engine.clientsCount);
+    //   io.sockets.emit("usersCount", io.engine.clientsCount);
 
     //Obtiene listado de mensajes con cada conexión entrante y lo envía al socket
     try {
@@ -65,13 +65,13 @@ export default io => {
       }
     });
 
-    // Actualizo la cantidad de usuarios conectados con cada desconexión y la envío a todos los sockets
+    // Actualizo la cantidad de usuarios conectados con cada desconexión y la mustro por consola.
     socket.on("disconnect", () => {
       now = new Date().toLocaleTimeString();
       console.log(
-        `[${now}] ** Conexiones websocket activas: ${io.engine.clientsCount} **`
+        `[${now}] ** Conexiones websocket activas en servidor PID ${process.pid}: ${io.engine.clientsCount} **`
       );
-      io.sockets.emit("usersCount", io.engine.clientsCount);
+      //io.sockets.emit("usersCount", io.engine.clientsCount);
     });
 
     //Valida los datos del producto que se va a cargar
@@ -98,4 +98,9 @@ export default io => {
       }
     }
   });
+
+  //Cambié a esta forma de actualizar los usuarios conectados para ser compatible con el modo cluster. Así cada x seg cada servidro worker envía los usuarios que tiene conectados y en el front se procesa el conjunto de infomación
+  setInterval(() => {
+    io.sockets.emit("usersCount", io.engine.clientsCount);
+  }, 3000);
 };
