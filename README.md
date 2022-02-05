@@ -39,9 +39,13 @@ Tomando con base el proyecto que vamos realizando, agregar un parámetro más en
 Luego de clonar o descargar el repositorio e instalar todas las dependencias con `npm install`, existen dos comandos para levantar el proyecto.
 Para levantarlo en modo de desarrollo junto a nodemon, utilizar `npm run dev`. De lo contrario, para ejecutarlo en "modo producción", utilizar `npm start`.
 
-Se puede seleccionar entre dos métodos de persistencia de **datos y sesiones** a través de la variable de entorno `PERS`. El modo `PERS=mongodb_atlas` **(DEFECTO)** para persistir en **MongoDB Atlas** y el modo `PERS=mongodb` para hacer lo mismo en **MongoDB local**
+Se puede pasar por parámetros de argumento dos opciones:
+| Opción | Valor | Defecto |
+| ------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p --port --PORT` | Número de puerto de escucha del servidor | 8080 |
+| `-m --mode --MODE` | Módo de ejecución del servidor. `fork` o `cluster` | fork |
 
-TODO:TODO:
+Se puede seleccionar entre dos métodos de persistencia de **datos y sesiones** a través de la variable de entorno `PERS`. El modo `PERS=mongodb_atlas` **(DEFECTO)** para persistir en **MongoDB Atlas** y el modo `PERS=mongodb` para hacer lo mismo en **MongoDB local**
 
 ### Vistas
 
@@ -81,3 +85,20 @@ Consiste en las siguientes rutas:
 | GET    | **/api/randoms**        | Devuelve una cantidad de números aleatorios en el rango del 1 al 1000 especificada por parámetros de consulta (query). Por ej: `/api/randoms?cant=20000`. Si dicho parámetro no se ingresa, calcula 100.000.000 de números. |
 
 ### Detalles y comentarios
+
+Hice algunas modificaciones en el código para solucionar el problema que se presenta con la librería **socket.io** al seleccionar el funcionamiento del servidor en modo clúster.
+Esté problema da como resultado que no funcione la comunicación por **Websockets** en modo clúster.
+
+El problema radica en dos cuestiones:
+
+- El método de sondeo largo http que opera al inicio de la conexión hasta establecerse el intercambio por websocket, provoca múltiples solicitudes http, que van a parar a distintos servidores del clúster, "rompiendo" la comunicación con el servidor original.
+
+- Los mensajes entre un cliente y un servidor quedan confinados entre ellos, y los demás servidores del clúster no se enteran de ellos
+
+Para solucionar el primer problema, deshabilite el sondeo largo http del cliente. También puede solucionarse con sticky sessions, manteniendo la conexión de un determinado cliente con un mismo servidor.
+
+Para solucionar el segundo punto, utilicé un adaptador para el clúster, mediante la librería `@socket.io/cluster-adapter`. Con este se consigue que cuando un servidor envía un mensaje a un grupo o todos los sockets, este mensaje también es enviado a los demás servidores del clúster y remitido a sus respectivos clientes.
+
+Otra modificación que realicé es respecto a la configuración del servidor **Nginx**.  
+Aparte de los puntos que se piden, incorporé una tercera configuración que hace lo mismo que la segunda, pero en este caso los archivos estáticos se sirven por parte de **Nginx** y no por los servidores **express**.  
+Lográndose de esta manera una mejora en la performance y dejando al servidor express más liberado para otro tipo de tareas.
