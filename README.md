@@ -102,3 +102,7 @@ Para solucionar el segundo punto, utilicé un adaptador para el clúster, median
 Otra modificación que realicé es respecto a la configuración del servidor **Nginx**.  
 Aparte de los puntos que se piden, incorporé una tercera configuración que hace lo mismo que la segunda, pero en este caso los archivos estáticos se sirven por parte de **Nginx** y no por los servidores **express**.  
 Lográndose de esta manera una mejora en la performance y dejando al servidor express más liberado para otro tipo de tareas.
+
+Los diferentes archivos de configuración se ecuentran en la carpeta `nginx`.
+
+El resumen de comandos utilizados para llevar a cabo el desafío se encuentran en el archivo `commands.txt` dentro de la carpeta `Docs`.
